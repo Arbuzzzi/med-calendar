@@ -10,8 +10,8 @@ import AppCalendar from './components/AppCalendar'
 export default {
   name: 'App',
   methods: {
-    test($refs) {
-      console.log($refs);
+    test(data) {
+      // console.log(data);
     }
   },
   components: {
