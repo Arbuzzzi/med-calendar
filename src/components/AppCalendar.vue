@@ -18,6 +18,11 @@
 					keyboard_arrow_left
 				</v-icon>
 			</v-btn>
+			<a class="text-xs-center date-now" @click="start = now.date">
+				Сегодня: <br>
+				{{ now.string }}
+			</a>
+
 			<v-btn
 					fab
 					outline
@@ -34,10 +39,6 @@
 				</v-icon>
 			</v-btn>
 			<br><br><br>
-			<v-checkbox
-					v-model="dark"
-					label="Dark"
-			></v-checkbox>
 			<v-menu
 					ref="startMenu"
 					v-model="startMenu"
@@ -82,6 +83,72 @@
 					</v-btn>
 				</v-date-picker>
 			</v-menu>
+			<v-card>
+				<v-card-text>Фильтры по комнатам</v-card-text>
+				<v-card-text class="pt-0">
+					<v-checkbox
+							ref="roomsFilter"
+							class="mt-1"
+							:light="false"
+							v-for="(roomEvent, i) in roomEvents"
+							:key="roomEvent.room"
+							v-model="roomEvent.active"
+							:label="roomEvent.room"
+							hide-details
+							color="blue accent-4"
+					></v-checkbox>
+					<div class="text-xs-right mt-2">
+						<v-btn small
+								@click="resetRoomEventsActive(roomEvents, roomsFilterDefault)"
+						>сбросить фильтр</v-btn>
+					</div>
+
+				</v-card-text>
+			</v-card>
+			<v-card class="mt-3">
+				<v-card-text>Фильтры по спикеру</v-card-text>
+				<v-card-text class="pt-0">
+					<v-checkbox
+							class="mt-1"
+							:light="false"
+							v-for="(speaker, i) in getSpeakers"
+							:key="speaker.title + i"
+							@change="onChangeSpeaker({value: $event, speaker: {name: speaker.speaker.name}})"
+							:label="speaker.speaker.name"
+							hide-details
+							:input-value="speaker.speaker.active"
+							color="blue accent-4"
+					></v-checkbox>
+					<div class="text-xs-right mt-2">
+						<v-btn small
+								@click="resetCheckboxesSpeaker(roomsFilterDefault)"
+						>сбросить фильтр</v-btn>
+					</div>
+
+				</v-card-text>
+			</v-card>
+			<v-card class="mt-3">
+				<v-card-text>Филтр по направлению</v-card-text>
+				<v-card-text class="pt-0">
+					<v-checkbox
+							class="mt-1"
+							:light="false"
+							v-for="(eventType, i) in getEventType"
+							:key="eventType.title + i"
+							@change="onChangeEventType({value: $event, eventType: {name: eventType.eventType.name}})"
+							:label="eventType.eventType.name"
+							hide-details
+							:input-value="eventType.eventType.active"
+							color="blue accent-4"
+					></v-checkbox>
+					<div class="text-xs-right mt-2">
+						<v-btn small
+								@click="resetCheckboxesEventType(roomsFilterDefault)"
+						>сбросить фильтр</v-btn>
+					</div>
+
+				</v-card-text>
+			</v-card>
 		</v-flex>
 		<v-flex
 				sm12
@@ -97,7 +164,6 @@
 						:end="end"
 						:min-weeks="minWeeks"
 						:max-days="maxDays"
-						:now="now"
 						:dark="dark"
 						:weekdays="weekdays"
 						:first-interval="intervals.first"
@@ -110,12 +176,12 @@
 						locale="ru-RU"
 						:interval-format="intervalFormat"
 				>
-
 					<template v-slot:dayHeader="{ day, date }">
 						<v-layout>
 							<v-flex xs3 class="pa-1 calendar-border-right calendar-border-top"
 									v-for="roomEvent in roomEvents"
 									:key="roomEvent.room"
+									:class="roomEvent.active ? '' : 'hide'"
 							>
 								<div>
 									{{ roomEvent.room }}
@@ -126,41 +192,37 @@
 					<template v-slot:interval="{ hour, date, minutes, time }">
 						<v-layout class="fill-height">
 							<v-flex xs3 class="calendar-border-right fill-height pa-1"
-									v-for="(roomEvent, i) in getRoomEvents(date, time)"
-									:class="test(roomEvent)"
+									v-for="(roomEvent, i) in getRoomEventsTime(date, hour)"
 									:key="'roomEventtitle'+i"
+									:class="roomEvent.active ? '' : 'hide'"
 							>
 								<v-card
+										dark
 										:height="intervals.height - 12"
-										:class="roomEvent.className"
-										v-if="roomEvent.timeStart === time && roomEvent.date === date"
+										:class="roomEvent.speaker.active && roomEvent.eventType.active ? roomEvent.className : roomEvent.className + ' disabled'"
+										:style="roomEvent.style"
+										v-if="roomEvent.title"
 										disabled
 								>
-									<v-card-text
-
-									>
-										<div class="grey--text text--darken-1">
-											{{ roomEvent.title }}
-										</div>
-										<div>
-											{{ roomEvent.text }}
-										</div>
-									</v-card-text>
-								</v-card>
-								<v-card
-										:height="intervals.height - 12"
-										v-else
-										disabled
-								>
-									<v-card-text
-
-									>
-										<div class="grey--text text--darken-1">
-											пустая ячейка
-										</div>
-										<div>
-										</div>
-									</v-card-text>
+									<v-layout class="fill-height wrap">
+										<v-flex>
+											<v-card-text>
+												<div class="mb-2">
+													{{ roomEvent.title }}
+												</div>
+												<div>
+													{{ roomEvent.text }}
+												</div>
+											</v-card-text>
+										</v-flex>
+										<v-flex class="mt-auto">
+											<v-card-text class="">
+												<div class="text-xs-right">
+													Спикер: {{ roomEvent.speaker.name }}
+												</div>
+											</v-card-text>
+										</v-flex>
+									</v-layout>
 								</v-card>
 							</v-flex>
 						</v-layout>
@@ -175,13 +237,26 @@
 
 	const weekdaysDefault = [0, 1, 2, 3, 4, 5, 6]
 
-	const intervalsDefault = {
-		first: 8,
-		minutes: 60,
-		count: 13,
-		height: 140
-	}
+	const nowDate = {
+		default() {
+			let month = [
+				'Января',
+				'Февраля',
+				'Марта',
+				'Апреля',
+				'Мая',
+				'Июня',
+				'Июля',
+				'Авгуса',
+				'Сентября',
+				'Ноября',
+				'Декабря',
+			];
+			let date = new Date()
+			return `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`
 
+		}
+	}
 	const styling = {
 		default () {
 			return undefined
@@ -217,20 +292,29 @@
 			end: null,
 			nowMenu: false,
 			minWeeks: 1,
-			now: null, //new Date("yyyy-mm-dd").format("yyyy-mm-dd"),
+			now: {
+				string: nowDate.default(),
+				date: new Date().toISOString().substr(0, 10)
+			},
 			type: 'day',
 			weekdays: weekdaysDefault,
-			intervals: intervalsDefault,
+			roomsFilterDefault: true,
+			// intervals: this.intervalsDefault,
 			maxDays: 7,
 			styleInterval: 'default',
 			color: 'primary',
 		}),
 		computed: {
 			...mapGetters([
-				'roomEvents'
+				'roomEvents',
+				'intervals',
+				'getRoomsEvents',
+				'getSpeakers',
+				'getEventType'
 			]),
 
 			intervalStyle () {
+				console.log(this.$refs)
 				return styling[ this.styleInterval ].bind(this)
 			},
 			hasIntervals () {
@@ -242,16 +326,25 @@
 				return this.type in {
 					'custom-weekly': 1, 'custom-daily': 1
 				}
-			}
+			},
 		},
 		methods: {
+			...mapActions([
+				'resetCheckboxesSpeaker',
+				'onChangeSpeaker',
+				'resetCheckboxesEventType',
+				'onChangeEventType'
+			]),
 			showIntervalLabel (interval) {
 				return interval.minute === 0
+			},
+			disabledEvent() {
+				return 'test'
 			},
 			intervalFormat(interval) {
 				return interval.hour + ':00'
 			},
-			getRoomEvents(date, time){
+			getRoomEventsTime(date, hour){
 				let result = []
 
 				this.roomEvents.forEach(function (roomEvent, index, arr){
@@ -260,22 +353,28 @@
 						text: null,
 						className: null,
 						date: date,
-						timeStart: time,
-						timeEnd: '10:00'
+						timeStart: hour,
+						timeEnd: '10:00',
+						active: roomEvent.active
 					}
 					roomEvent.items.forEach(function (subItem, subIndex, subArr){
-						if (subItem.date === date && subItem.timeStart === time) {
+						if (subItem.date === date && parseInt(subItem.timeStart.substr(0, 2)) === hour) {
+							subItem.active = roomEvent.active
 							result[index] = subItem
 						}
 					})
 				})
-				console.log(result);
 				return result
 			},
 
 			test(data){
-				// console.log(data);
+				console.log(data);
 				return data
+			},
+			resetRoomEventsActive(data, defaults) {
+				data.forEach((item)=>{
+					item.active = defaults
+				})
 			}
 		},
 		name: "app-calendar"
@@ -287,6 +386,17 @@
 		position: relative;
 		padding-top: 30px;
 		box-shadow: 0 0 10px rgba(0,0,0,0.3);
+	}
+	.disabled {
+		opacity: 0.4 !important;
+	}
+	.hide {
+		display: none !important;
+	}
+	.date-now{
+		display: block;
+		width: 100%;
+		height: 0;
 	}
 </style>
 <style>
