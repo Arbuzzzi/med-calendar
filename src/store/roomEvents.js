@@ -1,7 +1,11 @@
 export default {
 	state: {
 		intervals: {
-			first: 8,
+			minTime: '08:00',
+			maxTime: '19:00',
+			minTimeDefault: '08:00',
+			maxTimeDefault: '19:00',
+			first: 7,
 			minutes: 60,
 			count: 13,
 			height: 140
@@ -106,6 +110,66 @@ export default {
 					name: 'Auditorium 1A',
 					active: true,
 				}
+			},
+			{
+				title: 'room 4',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '15:15',
+				eventLength: 70,
+				speaker: {
+					name: 'D. Tibboel',
+					active: true
+				},
+				eventType: {
+					name: 'пленарная сессия',
+					active: true
+				},
+				room: {
+					name: 'room 4',
+					active: true,
+				}
+			},
+			{
+				title: 'room 5',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '15:15',
+				eventLength: 70,
+				speaker: {
+					name: 'D. Tibboel',
+					active: true
+				},
+				eventType: {
+					name: 'пленарная сессия',
+					active: true
+				},
+				room: {
+					name: 'room 5',
+					active: true,
+				}
+			},
+			{
+				title: 'room 6',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '15:15',
+				eventLength: 70,
+				speaker: {
+					name: 'D. Tibboel',
+					active: true
+				},
+				eventType: {
+					name: 'пленарная сессия',
+					active: true
+				},
+				room: {
+					name: 'room 6',
+					active: true,
+				}
 			}
 		],
 	},
@@ -129,6 +193,10 @@ export default {
 		},
 		onChangeRoom(state, payload) {
 			setData.onChange(state.roomEvents, 'room', payload)
+		},
+
+		changeTimeStart(state, payload) {
+			console.log(1);
 		}
 	},
 	actions: {
@@ -151,6 +219,10 @@ export default {
 		},
 		onChangeRoom({commit}, payload) {
 			commit('onChangeRoom', payload)
+		},
+
+		changeTimeStart({commit}, payload) {
+			commit('changeTimeStart', payload)
 		}
 	},
 	getters:{
@@ -169,7 +241,14 @@ export default {
 			return state.roomEvents
 		},
 		intervals(state) {
-			return state.intervals
+			let result = state.intervals
+			let times = {
+				minTime: parseInt(state.intervals.minTime.substr(0, 10)),
+				maxTime: parseInt(state.intervals.maxTime.substr(0, 10))
+			}
+			result.first = times.minTime - 1
+			result.count = times.maxTime - times.minTime + 2
+			return result
 		},
 		getSpeakers(state) {
 			return getData.getOnceData(state.roomEvents, 'speaker')

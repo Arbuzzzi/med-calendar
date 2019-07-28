@@ -39,51 +39,128 @@
 				</v-icon>
 			</v-btn>
 			<br><br><br>
-			<v-menu
-					ref="startMenu"
-					v-model="startMenu"
-					:close-on-content-click="false"
-					:nudge-right="40"
-					:return-value.sync="start"
-					transition="scale-transition"
-					min-width="290px"
-					lazy
-					offset-y
-					full-width
-			>
-				<template v-slot:activator="{ on }">
-					<v-text-field
-							v-model="start"
-							label="Выберите день"
-							prepend-icon="event"
-							readonly
-							v-on="on"
-					></v-text-field>
-				</template>
-				<v-date-picker
-						v-model="start"
-						no-title
-						scrollable
-						locale="ru"
-				>
-					<v-spacer></v-spacer>
-					<v-btn
-							flat
-							color="primary"
-							@click="startMenu = false"
-					>
-						Cancel
-					</v-btn>
-					<v-btn
-							flat
-							color="primary"
-							@click="$refs.startMenu.save(start)"
-					>
-						OK
-					</v-btn>
-				</v-date-picker>
-			</v-menu>
 			<v-card>
+				<v-card-text>
+					<v-menu
+							ref="startMenu"
+							v-model="startMenu"
+							:close-on-content-click="false"
+							:nudge-right="40"
+							:return-value.sync="start"
+							transition="scale-transition"
+							min-width="290px"
+							lazy
+							offset-y
+							full-width
+					>
+						<template v-slot:activator="{ on }">
+							<v-text-field
+									v-model="start"
+									label="Выберите день"
+									prepend-icon="event"
+									readonly
+									v-on="on"
+							></v-text-field>
+						</template>
+						<v-date-picker
+								v-model="start"
+								no-title
+								scrollable
+								locale="ru"
+								@input="$refs.startMenu.save(start)"
+						>
+							<v-spacer></v-spacer>
+							<v-btn
+									flat
+									color="primary"
+									@click="startMenu = false"
+							>
+								Отмена
+							</v-btn>
+							<v-btn
+									flat
+									color="primary"
+									@click="$refs.startMenu.save(now.date)"
+							>
+								Сегодня
+							</v-btn>
+						</v-date-picker>
+					</v-menu>
+					<v-menu
+							ref="menuTimeStart"
+							v-model="menuTimeStart"
+							:close-on-content-click="false"
+							:nudge-right="40"
+							:return-value.sync="timeStart"
+							lazy
+							transition="scale-transition"
+							offset-y
+							full-width
+							max-width="290px"
+							min-width="290px"
+
+					>
+						<template v-slot:activator="{ on }">
+							<v-text-field
+									v-model="timeStart"
+									@input="changeTimeStart($event)"
+									label="Время c:"
+									prepend-icon="access_time"
+									readonly
+									v-on="on"
+							></v-text-field>
+						</template>
+						<v-time-picker
+								v-if="menuTimeStart"
+								v-model="timeStart"
+								full-width
+								@click:minute="$refs.menuTimeStart.save(timeStart)"
+								format="24hr"
+								:min="intervals.minTime"
+								:max="intervals.maxTime"
+						></v-time-picker>
+					</v-menu>
+
+					<v-menu
+							ref="menuTimeEnd"
+							v-model="menuTimeEnd"
+							:close-on-content-click="false"
+							:nudge-right="40"
+							:return-value.sync="timeEnd"
+							lazy
+							transition="scale-transition"
+							offset-y
+							full-width
+							max-width="290px"
+							min-width="290px"
+					>
+						<template v-slot:activator="{ on }">
+							<v-text-field
+									v-model="timeEnd"
+									label="Время по:"
+									prepend-icon="access_time"
+									readonly
+									v-on="on"
+							></v-text-field>
+						</template>
+						<v-time-picker
+								v-if="menuTimeEnd"
+								v-model="timeEnd"
+								full-width
+								@click:minute="$refs.menuTimeEnd.save(timeEnd)"
+								format="24hr"
+								:min="intervals.minTime"
+								:max="intervals.maxTime"
+						></v-time-picker>
+					</v-menu>
+					<div class="text-xs-right">
+						<v-btn small
+								@click="resetCheckboxesRoom(roomsFilterDefault)"
+						>сбросить время</v-btn>
+					</div>
+				</v-card-text>
+			</v-card>
+			<v-card class="mt-3">
 				<v-card-text>Фильтры по комнатам</v-card-text>
 				<v-card-text class="pt-0">
 					<v-checkbox
@@ -157,7 +234,7 @@
 				lg10
 				class="pl-3"
 		>
-			<v-sheet elevation="1" class="mt-2 mr-2">
+			<v-sheet elevation="1" class="mr-2">
 				<v-calendar
 						ref="calendar"
 						v-model="start"
@@ -170,14 +247,16 @@
 						:interval-minutes="intervals.minutes"
 						:interval-count="intervals.count"
 						:interval-height="intervals.height"
-						:show-interval-label="showIntervalLabel"
 						:color="color"
 						locale="ru-RU"
 						:interval-format="intervalFormat"
 				>
-					<template v-slot:dayHeader="{ day, date }">
-						<v-layout>
+					<template v-slot:interval="{hour, date, minutes, time, timeToY, minutesToPixels}">
+						<v-layout class="room-header"
+								v-if="hour === intervals.first"
+						>
 							<v-flex xs3 class="pa-1 calendar-border-right calendar-border-top"
+									:style="{minWidth: '236px'}"
 									v-for="roomEvent in getRooms"
 									:key="roomEvent.room.name"
 									:class="roomEvent.room.active ? '' : 'hide'"
@@ -187,10 +266,9 @@
 								</div>
 							</v-flex>
 						</v-layout>
-					</template>
-					<template v-slot:interval="{ hour, date, minutes, time }">
 						<v-layout class="fill-height">
 							<v-flex xs3 class="calendar-border-right fill-height pa-1"
+									:style="{minWidth: '236px'}"
 									v-for="(roomEvent, i) in getRoomEventsTime(date, hour)"
 									:key="'roomEventTitle'+i"
 									:class="roomEvent.room.active ? '' : 'hide'"
@@ -257,6 +335,10 @@
 
 	export default {
 		data: () => ({
+			menuTimeStart: '',
+			menuTimeEnd: '',
+			timeStart: '',
+			timeEnd: '',
 			dark: false,
 			startMenu: false,
 			start: new Date().toISOString().substr(0, 10),
@@ -288,7 +370,8 @@
 				'resetCheckboxesEventType',
 				'onChangeEventType',
 				'onChangeRoom',
-				'resetCheckboxesRoom'
+				'resetCheckboxesRoom',
+				'changeTimeStart'
 			]),
 			showIntervalLabel (interval) {
 				return interval.minute === 0
@@ -349,8 +432,11 @@
 		width: 100%;
 		height: 0;
 	}
+	.room-header{
+		position: sticky;
+	}
 </style>
-<style>
+<style lang="scss">
 	.v-calendar-daily__interval-text{
 		top: 50% !important;
 		font-size: 10px !important;
@@ -360,10 +446,18 @@
 		overflow: auto !important;
 		padding-right: 17px;
 	}
+	.v-calendar-daily__day{
+		width: auto;
+	}
 	.calendar-border-right {
 		border-right: #e0e0e0 1px solid;
 	}
 	.calendar-border-top {
 		border-top: #e0e0e0 1px solid;
+	}
+	.v-calendar-daily__day, .v-calendar-daily__intervals-body {
+		& > div:first-child {
+			height: auto !important;
+		}
 	}
 </style>
