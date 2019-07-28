@@ -1,4 +1,3 @@
-import Vue from 'vue'
 export default {
 	state: {
 		intervals: {
@@ -9,88 +8,106 @@ export default {
 		},
 		roomEvents: [
 			{
-				id: '01',
-				room: 'EFIC Hall',
-				active: true,
-				items: [
-					{
-						id: '011',
-						title: 'EFIC Hall 1',
-						text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
-						className: 'red',
-						date: new Date().toISOString().substr(0, 10),
-						timeStart: '09:00',
-						eventLength: 90,
-						speaker: {
-							name: 'H. Wittink',
-							active: true
-						},
-						eventType: {
-							name: 'клинич. разбор',
-							active: true
-						},
-					}
-				],
+				title: 'EFIC Hall 1',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '08:30',
+				eventLength: 90,
+				speaker: {
+					name: 'H. Wittink',
+					active: true
+				},
+				eventType: {
+					name: 'клинич. разбор',
+					active: true
+				},
+				room: {
+					name: 'EFIC Hall',
+					active: true,
+				}
 			},
 			{
-				id: '02',
-				room: 'Auditorium 1A',
-				active: true,
-				items: [
-					{
-						id: '021',
-						title: 'Auditorium 1',
-						text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
-						className: 'red',
-						date: new Date().toISOString().substr(0, 10),
-						timeStart: '09:00',
-						eventLength: 120,
-						speaker: {
-							name: 'P. Cameron',
-							active: true
-						},
-						eventType: {
-							name: 'клинич. разбор',
-							active: true
-						},
-					},
-					{
-						id: '022',
-						title: 'Auditorium 2',
-						text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
-						className: 'brown',
-						date: new Date().toISOString().substr(0, 10),
-						timeStart: '12:30',
-						eventLength: 60,
-						speaker: {
-							name: 'H. Wittink',
-							active: true
-						},
-						eventType: {
-							name: 'пленарная сессия',
-							active: true
-						},
-					},
-					{
-						id: '023',
-						title: 'Auditorium 3',
-						text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
-						className: 'purple',
-						date: '2019-07-27',
-						timeStart: '17:00',
-						eventLength: 60,
-						speaker: {
-							name: 'D. Tibboel',
-							active: true
-						},
-						eventType: {
-							name: 'клинич. разбор',
-							active: true
-						}
-					},
-				],
+				title: 'room 3',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '09:00',
+				eventLength: 90,
+				speaker: {
+					name: 'speaker-3',
+					active: true
+				},
+				eventType: {
+					name: 'клинич. разбор',
+					active: true
+				},
+				room: {
+					name: 'room 3',
+					active: true,
+				}
 			},
-		]
+			{
+				title: 'Auditorium 1A',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '09:00',
+				eventLength: 90,
+				speaker: {
+					name: 'P. Cameron',
+					active: true
+				},
+				eventType: {
+					name: 'клинич. разбор',
+					active: true
+				},
+				room: {
+					name: 'Auditorium 1A',
+					active: true,
+				}
+			},
+			{
+				title: 'Auditorium 1A',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '12:30',
+				eventLength: 60,
+				speaker: {
+					name: 'H. Wittink',
+					active: true
+				},
+				eventType: {
+					name: 'пленарная сессия',
+					active: true
+				},
+				room: {
+					name: 'Auditorium 1A',
+					active: true,
+				}
+			},
+			{
+				title: 'Auditorium 1A',
+				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				className: 'red',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '15:15',
+				eventLength: 70,
+				speaker: {
+					name: 'D. Tibboel',
+					active: true
+				},
+				eventType: {
+					name: 'пленарная сессия',
+					active: true
+				},
+				room: {
+					name: 'Auditorium 1A',
+					active: true,
+				}
+			}
+		],
 	},
 	mutations: {
 		resetCheckboxesSpeaker(state, payload) {
@@ -105,6 +122,13 @@ export default {
 		},
 		onChangeEventType(state, payload) {
 			setData.onChange(state.roomEvents, 'eventType', payload)
+		},
+
+		resetCheckboxesRoom(state, payload) {
+			setData.resetCheckbox(state.roomEvents, 'room', payload)
+		},
+		onChangeRoom(state, payload) {
+			setData.onChange(state.roomEvents, 'room', payload)
 		}
 	},
 	actions: {
@@ -120,20 +144,26 @@ export default {
 		},
 		onChangeEventType({commit}, payload) {
 			commit('onChangeEventType', payload)
+		},
+
+		resetCheckboxesRoom({commit}, payload) {
+			commit('resetCheckboxesRoom', payload)
+		},
+		onChangeRoom({commit}, payload) {
+			commit('onChangeRoom', payload)
 		}
 	},
 	getters:{
-		roomEvents(state){
-			state.roomEvents.forEach(function (item, index, arr){
-				// state.roomEvents[index].active = true
-				item.items.forEach(function (subItem, subIndex, subArr){
-					let roomStyles = getData.getEventStyle({
-						minutes: subItem.eventLength,
-						defaultHeight: state.intervals.height - 8,
-						defaultMinutes: state.intervals.minutes,
-						timeStart: subItem.timeStart
-					})
-					state.roomEvents[index].items[subIndex].style = roomStyles
+		getRooms(state) {
+			return getData.getOnceData(state.roomEvents, 'room')
+		},
+		roomEvents(state) {
+			state.roomEvents.forEach(function (item, index){
+				state.roomEvents[index].style = getData.getEventStyle({
+					minutes: item.eventLength,
+					defaultHeight: state.intervals.height - 8,
+					defaultMinutes: state.intervals.minutes,
+					timeStart: item.timeStart
 				})
 			})
 			return state.roomEvents
@@ -142,38 +172,25 @@ export default {
 			return state.intervals
 		},
 		getSpeakers(state) {
-			return getData.getFilter(state.roomEvents, 'speaker')
+			return getData.getOnceData(state.roomEvents, 'speaker')
 		},
 		getEventType(state) {
-			return getData.getFilter(state.roomEvents, 'eventType')
-		},
-		getRoomsEvents(state) {
-			let result = []
-			state.roomEvents.forEach(function (roomEvent, index, arr){
-				roomEvent.items.forEach(function (subItem, subIndex, subArr){
-					result.push(subItem)
-				})
-			})
-			return result
+			return getData.getOnceData(state.roomEvents, 'eventType')
 		}
 	}
 }
 
 const setData = {
 	onChange(array, dataName, setValue) {
-		array.forEach(function (items){
-			items.items.forEach(function (item){
-				if (item[ dataName ].name === setValue[ dataName ].name) {
-					item[ dataName ].active = setValue.value
-				}
-			})
+		array.forEach(function (item){
+			if (item[ dataName ].name === setValue[ dataName ].name) {
+				item[ dataName ].active = setValue.value
+			}
 		})
 	},
 	resetCheckbox(array, dataName, setValue) {
-		array.forEach(function (roomEvent, index, arr){
-			roomEvent.items.forEach(function (subItem, subIndex, subArr){
-				subItem[ dataName ].active = setValue
-			})
+		array.forEach(function (arrItem) {
+			arrItem[ dataName ].active = setValue
 		})
 	},
 }
@@ -182,26 +199,22 @@ const getData = {
 	default() {
 		return undefined
 	},
-	getFilter(array, filterName) {
+	getOnceData(array, item) {
 		let result = []
-		array.forEach(function (roomEvent, index, arr){
-			roomEvent.items.forEach(function (subItem, subIndex, subArr){
-				// result.speaker = speaker.getSpeaker(roomEvent)
+		array.forEach(function (arrItem){
+			let flag = true
 
-				let flag = true
-
-				if (result[0] === undefined) {
-					result.push(subItem)
-				} else {
-					result.some(function (resultItem){
-						flag = resultItem[ filterName ].name === subItem[ filterName ].name
-						return flag
-					})
-				}
-				if (!flag) {
-					result.push(subItem)
-				}
-			})
+			if (result[0] === undefined) {
+				result.push(arrItem)
+			} else {
+				result.some(function (resultItem){
+					flag = resultItem[ item ].name === arrItem[ item ].name
+					return flag
+				})
+			}
+			if (!flag) {
+				result.push(arrItem)
+			}
 		})
 		return result
 	},

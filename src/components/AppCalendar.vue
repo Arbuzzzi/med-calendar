@@ -90,16 +90,18 @@
 							ref="roomsFilter"
 							class="mt-1"
 							:light="false"
-							v-for="(roomEvent, i) in roomEvents"
-							:key="roomEvent.room"
-							v-model="roomEvent.active"
-							:label="roomEvent.room"
+							v-for="(roomEvent, i) in getRooms"
+							:key="roomEvent.room.name + i"
+							v-model="roomEvent.room.active"
+							@change="onChangeRoom({value: $event, room: {name: roomEvent.room.name}})"
+							:input-value="roomEvent.room.active"
+							:label="roomEvent.room.name"
 							hide-details
 							color="blue accent-4"
 					></v-checkbox>
 					<div class="text-xs-right mt-2">
 						<v-btn small
-								@click="resetRoomEventsActive(roomEvents, roomsFilterDefault)"
+								@click="resetCheckboxesRoom(roomsFilterDefault)"
 						>сбросить фильтр</v-btn>
 					</div>
 
@@ -161,16 +163,13 @@
 						v-model="start"
 						:type="type"
 						:start="start"
-						:end="end"
 						:min-weeks="minWeeks"
 						:max-days="maxDays"
 						:dark="dark"
-						:weekdays="weekdays"
 						:first-interval="intervals.first"
 						:interval-minutes="intervals.minutes"
 						:interval-count="intervals.count"
 						:interval-height="intervals.height"
-						:interval-style="intervalStyle"
 						:show-interval-label="showIntervalLabel"
 						:color="color"
 						locale="ru-RU"
@@ -179,12 +178,12 @@
 					<template v-slot:dayHeader="{ day, date }">
 						<v-layout>
 							<v-flex xs3 class="pa-1 calendar-border-right calendar-border-top"
-									v-for="roomEvent in roomEvents"
-									:key="roomEvent.room"
-									:class="roomEvent.active ? '' : 'hide'"
+									v-for="roomEvent in getRooms"
+									:key="roomEvent.room.name"
+									:class="roomEvent.room.active ? '' : 'hide'"
 							>
 								<div>
-									{{ roomEvent.room }}
+									{{ roomEvent.room.name }}
 								</div>
 							</v-flex>
 						</v-layout>
@@ -193,8 +192,8 @@
 						<v-layout class="fill-height">
 							<v-flex xs3 class="calendar-border-right fill-height pa-1"
 									v-for="(roomEvent, i) in getRoomEventsTime(date, hour)"
-									:key="'roomEventtitle'+i"
-									:class="roomEvent.active ? '' : 'hide'"
+									:key="'roomEventTitle'+i"
+									:class="roomEvent.room.active ? '' : 'hide'"
 							>
 								<v-card
 										dark
@@ -235,8 +234,6 @@
 
 <script>
 
-	const weekdaysDefault = [0, 1, 2, 3, 4, 5, 6]
-
 	const nowDate = {
 		default() {
 			let month = [
@@ -254,31 +251,6 @@
 			];
 			let date = new Date()
 			return `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`
-
-		}
-	}
-	const styling = {
-		default () {
-			return undefined
-		},
-		workday (interval) {
-			const inactive = interval.weekday === 0 ||
-				interval.weekday === 6 ||
-				interval.hour < 9 ||
-				interval.hour >= 17
-			const startOfHour = interval.minute === 0
-			const dark = this.dark
-			const mid = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-
-			return {
-				backgroundColor: inactive ? (dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)') : undefined,
-				borderTop: startOfHour ? undefined : '1px dashed ' + mid
-			}
-		},
-		past (interval) {
-			return {
-				backgroundColor: interval.past ? (this.dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)') : undefined
-			}
 		}
 	}
 	import {mapGetters, mapActions} from 'vuex'
@@ -288,93 +260,72 @@
 			dark: false,
 			startMenu: false,
 			start: new Date().toISOString().substr(0, 10),
-			endMenu: false,
 			end: null,
-			nowMenu: false,
 			minWeeks: 1,
 			now: {
 				string: nowDate.default(),
 				date: new Date().toISOString().substr(0, 10)
 			},
 			type: 'day',
-			weekdays: weekdaysDefault,
 			roomsFilterDefault: true,
-			// intervals: this.intervalsDefault,
 			maxDays: 7,
-			styleInterval: 'default',
 			color: 'primary',
 		}),
 		computed: {
 			...mapGetters([
-				'roomEvents',
 				'intervals',
-				'getRoomsEvents',
 				'getSpeakers',
-				'getEventType'
-			]),
+				'getEventType',
+				'getRooms',
+				'roomEvents'
 
-			intervalStyle () {
-				console.log(this.$refs)
-				return styling[ this.styleInterval ].bind(this)
-			},
-			hasIntervals () {
-				return this.type in {
-					'week': 1, 'day': 1, '4day': 1, 'custom-daily': 1
-				}
-			},
-			hasEnd () {
-				return this.type in {
-					'custom-weekly': 1, 'custom-daily': 1
-				}
-			},
+			]),
 		},
 		methods: {
 			...mapActions([
 				'resetCheckboxesSpeaker',
 				'onChangeSpeaker',
 				'resetCheckboxesEventType',
-				'onChangeEventType'
+				'onChangeEventType',
+				'onChangeRoom',
+				'resetCheckboxesRoom'
 			]),
 			showIntervalLabel (interval) {
 				return interval.minute === 0
-			},
-			disabledEvent() {
-				return 'test'
 			},
 			intervalFormat(interval) {
 				return interval.hour + ':00'
 			},
 			getRoomEventsTime(date, hour){
 				let result = []
-
-				this.roomEvents.forEach(function (roomEvent, index, arr){
-					result[index] = {
-						title: null,
-						text: null,
-						className: null,
-						date: date,
-						timeStart: hour,
-						timeEnd: '10:00',
-						active: roomEvent.active
-					}
-					roomEvent.items.forEach(function (subItem, subIndex, subArr){
-						if (subItem.date === date && parseInt(subItem.timeStart.substr(0, 2)) === hour) {
-							subItem.active = roomEvent.active
-							result[index] = subItem
+				this.getRooms.forEach((itemRoom, indexRoom)=>{
+					this.roomEvents.some((itemRoomEvent)=>{
+						if (itemRoomEvent.date === date
+							&& parseInt(itemRoomEvent.timeStart.substr(0, 2)) === hour
+							&& itemRoom.room.name === itemRoomEvent.room.name) {
+							result[indexRoom] = itemRoomEvent
+							return true
+						} else {
+							result[indexRoom] = {
+								title: null,
+								text: null,
+								className: null,
+								date: date,
+								timeStart: hour,
+								timeEnd: '10:00',
+								room: {
+									name: itemRoom.room.name,
+									active: itemRoom.room.active
+								}
+							}
 						}
 					})
 				})
 				return result
 			},
-
 			test(data){
 				console.log(data);
 				return data
-			},
-			resetRoomEventsActive(data, defaults) {
-				data.forEach((item)=>{
-					item.active = defaults
-				})
 			}
 		},
 		name: "app-calendar"
