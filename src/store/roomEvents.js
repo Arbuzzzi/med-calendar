@@ -13,11 +13,13 @@ export default {
 		roomEvents: [
 			{
 				title: 'EFIC Hall 1',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '08:30',
 				eventLength: 90,
+				dialog: false,
 				speaker: {
 					name: 'H. Wittink',
 					active: true
@@ -33,11 +35,13 @@ export default {
 			},
 			{
 				title: 'room 3',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '09:00',
 				eventLength: 90,
+				dialog: false,
 				speaker: {
 					name: 'speaker-3',
 					active: true
@@ -53,11 +57,13 @@ export default {
 			},
 			{
 				title: 'Auditorium 1A',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '09:00',
 				eventLength: 90,
+				dialog: false,
 				speaker: {
 					name: 'P. Cameron',
 					active: true
@@ -73,11 +79,13 @@ export default {
 			},
 			{
 				title: 'Auditorium 1A',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '12:30',
 				eventLength: 60,
+				dialog: false,
 				speaker: {
 					name: 'H. Wittink',
 					active: true
@@ -93,11 +101,13 @@ export default {
 			},
 			{
 				title: 'Auditorium 1A',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '15:15',
 				eventLength: 70,
+				dialog: false,
 				speaker: {
 					name: 'D. Tibboel',
 					active: true
@@ -113,11 +123,13 @@ export default {
 			},
 			{
 				title: 'room 4',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '15:15',
 				eventLength: 70,
+				dialog: false,
 				speaker: {
 					name: 'D. Tibboel',
 					active: true
@@ -133,11 +145,13 @@ export default {
 			},
 			{
 				title: 'room 5',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '15:15',
 				eventLength: 70,
+				dialog: false,
 				speaker: {
 					name: 'D. Tibboel',
 					active: true
@@ -153,11 +167,13 @@ export default {
 			},
 			{
 				title: 'room 6',
-				text: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
 				timeStart: '15:15',
 				eventLength: 70,
+				dialog: false,
 				speaker: {
 					name: 'D. Tibboel',
 					active: true
@@ -196,7 +212,14 @@ export default {
 		},
 
 		changeTimeStart(state, payload) {
-			console.log(1);
+			state.intervals.minTime = payload
+		},
+		changeTimeEnd(state, payload) {
+			state.intervals.maxTime = payload
+		},
+		resetTime(state) {
+			state.intervals.maxTime = state.intervals.maxTimeDefault
+			state.intervals.minTime = state.intervals.minTimeDefault
 		}
 	},
 	actions: {
@@ -223,6 +246,12 @@ export default {
 
 		changeTimeStart({commit}, payload) {
 			commit('changeTimeStart', payload)
+		},
+		changeTimeEnd({commit}, payload) {
+			commit('changeTimeEnd', payload)
+		},
+		resetTime({commit}, payload) {
+			commit('resetTime', payload)
 		}
 	},
 	getters:{
@@ -307,7 +336,8 @@ const getData = {
 		let height = (payload.minutes * payload.defaultHeight) / payload.defaultMinutes
 		let result = {
 			position: 'relative',
-			height: height + 'px'
+			height: height + 'px',
+			minHeight: height + 'px'
 		}
 		if (payload.timeStart > 0) {
 			result.top = (payload.timeStart * payload.defaultHeight) / payload.defaultMinutes + 'px'

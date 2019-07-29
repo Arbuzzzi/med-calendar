@@ -103,9 +103,9 @@
 						<template v-slot:activator="{ on }">
 							<v-text-field
 									v-model="timeStart"
-									@input="changeTimeStart($event)"
 									label="Время c:"
 									prepend-icon="access_time"
+									:value="intervals.maxTimeDefault"
 									readonly
 									v-on="on"
 							></v-text-field>
@@ -113,10 +113,11 @@
 						<v-time-picker
 								v-if="menuTimeStart"
 								v-model="timeStart"
+								@input="changeTimeStart($event)"
 								full-width
 								@click:minute="$refs.menuTimeStart.save(timeStart)"
 								format="24hr"
-								:min="intervals.minTime"
+								:min="intervals.minTimeDefault"
 								:max="intervals.maxTime"
 						></v-time-picker>
 					</v-menu>
@@ -139,6 +140,7 @@
 									v-model="timeEnd"
 									label="Время по:"
 									prepend-icon="access_time"
+									:value="intervals.maxTimeDefault"
 									readonly
 									v-on="on"
 							></v-text-field>
@@ -146,16 +148,17 @@
 						<v-time-picker
 								v-if="menuTimeEnd"
 								v-model="timeEnd"
+								@input="changeTimeEnd($event)"
 								full-width
 								@click:minute="$refs.menuTimeEnd.save(timeEnd)"
 								format="24hr"
 								:min="intervals.minTime"
-								:max="intervals.maxTime"
+								:max="intervals.maxTimeDefault"
 						></v-time-picker>
 					</v-menu>
 					<div class="text-xs-right">
 						<v-btn small
-								@click="resetCheckboxesRoom(roomsFilterDefault)"
+								@click="resetTimeDate()"
 						>сбросить время</v-btn>
 					</div>
 				</v-card-text>
@@ -256,7 +259,7 @@
 								v-if="hour === intervals.first"
 						>
 							<v-flex xs3 class="pa-1 calendar-border-right calendar-border-top"
-									:style="{minWidth: '236px'}"
+									:style="{minWidth: '140px'}"
 									v-for="roomEvent in getRooms"
 									:key="roomEvent.room.name"
 									:class="roomEvent.room.active ? '' : 'hide'"
@@ -268,39 +271,64 @@
 						</v-layout>
 						<v-layout class="fill-height">
 							<v-flex xs3 class="calendar-border-right fill-height pa-1"
-									:style="{minWidth: '236px'}"
+									:style="{minWidth: '140px'}"
 									v-for="(roomEvent, i) in getRoomEventsTime(date, hour)"
 									:key="'roomEventTitle'+i"
 									:class="roomEvent.room.active ? '' : 'hide'"
 							>
-								<v-card
-										dark
-										:height="intervals.height - 12"
-										:class="roomEvent.speaker.active && roomEvent.eventType.active ? roomEvent.className : roomEvent.className + ' disabled'"
-										:style="roomEvent.style"
-										v-if="roomEvent.title"
-										disabled
+								<v-dialog
+										v-model="roomEvent.dialog"
+										width="500"
 								>
-									<v-layout class="fill-height wrap">
-										<v-flex>
-											<v-card-text>
-												<div class="mb-2">
-													{{ roomEvent.title }}
-												</div>
-												<div>
-													{{ roomEvent.text }}
-												</div>
-											</v-card-text>
-										</v-flex>
-										<v-flex class="mt-auto">
-											<v-card-text class="">
-												<div class="text-xs-right">
-													Спикер: {{ roomEvent.speaker.name }}
-												</div>
-											</v-card-text>
-										</v-flex>
-									</v-layout>
-								</v-card>
+									<template v-slot:activator="{ on }">
+										<v-hover>
+											<v-card
+													slot-scope="{ hover }"
+													class="card-event"
+													dark
+													:class="roomEvent.speaker.active &&
+																	roomEvent.eventType.active ?
+																	roomEvent.className + ` elevation-${hover ? 12 : 2}` :
+																	roomEvent.className + ' disabled'"
+													:style="roomEvent.style"
+													v-if="roomEvent.title"
+													disabled
+													v-on="roomEvent.speaker.active && roomEvent.eventType.active ? on : ''"
+											>
+												<v-layout class="fill-height wrap"
+														:style="{minHeight: roomEvent.style.minHeight}"
+												>
+													<v-flex>
+														<v-card-text>
+															<div class="mb-2">
+																{{ roomEvent.title }}
+															</div>
+															<div>
+																{{ roomEvent.shortText }}
+															</div>
+														</v-card-text>
+													</v-flex>
+													<v-flex class="mt-auto">
+														<v-card-text class="">
+															<div class="text-xs-right">
+																Спикер: {{ roomEvent.speaker.name }}
+															</div>
+														</v-card-text>
+													</v-flex>
+												</v-layout>
+											</v-card>
+										</v-hover>
+									</template>
+									<v-card>
+										<v-card-title>
+											{{ roomEvent.title }}
+										</v-card-title>
+										<v-card-text>
+											{{ roomEvent.text }}
+										</v-card-text>
+									</v-card>
+								</v-dialog>
+
 							</v-flex>
 						</v-layout>
 					</template>
@@ -335,6 +363,7 @@
 
 	export default {
 		data: () => ({
+			eventHeight: '',
 			menuTimeStart: '',
 			menuTimeEnd: '',
 			timeStart: '',
@@ -353,6 +382,9 @@
 			maxDays: 7,
 			color: 'primary',
 		}),
+		mounted() {
+			this.resetTimeDate()
+		},
 		computed: {
 			...mapGetters([
 				'intervals',
@@ -371,10 +403,15 @@
 				'onChangeEventType',
 				'onChangeRoom',
 				'resetCheckboxesRoom',
-				'changeTimeStart'
+				'changeTimeStart',
+				'changeTimeEnd',
+				'resetTime',
 			]),
-			showIntervalLabel (interval) {
-				return interval.minute === 0
+			resetTimeDate(){
+				this.start = this.now.date
+				this.timeStart = this.intervals.minTimeDefault
+				this.timeEnd = this.intervals.maxTimeDefault
+				this.resetTime()
 			},
 			intervalFormat(interval) {
 				return interval.hour + ':00'
@@ -415,7 +452,17 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+	.card-event {
+		transition: height 0.3s;
+		cursor: pointer;
+		&.disabled {
+			cursor: default;
+		}
+		&:hover:not(.disabled) {
+			height: auto !important;
+		}
+	}
 	.feature-pane {
 		position: relative;
 		padding-top: 30px;
