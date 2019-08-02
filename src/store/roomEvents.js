@@ -8,7 +8,7 @@ export default {
 			first: 7,
 			minutes: 60,
 			count: 13,
-			height: 140
+			height: 80
 		},
 		roomEvents: [
 			{

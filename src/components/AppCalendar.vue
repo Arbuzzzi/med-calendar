@@ -286,9 +286,11 @@
 													slot-scope="{ hover }"
 													class="card-event"
 													dark
-													:class="roomEvent.speaker.active &&
-																	roomEvent.eventType.active ?
-																	roomEvent.className + ` elevation-${hover ? 12 : 2}` :
+													:class="roomEvent.speaker.active && // проверка на фильтры
+																	roomEvent.eventType.active ? // проверка на фильтры
+																		roomEvent.dialog ? // проверка на модалку
+																		'green' :
+																		roomEvent.className + ` elevation-${hover ? 12 : 2}` :
 																	roomEvent.className + ' disabled'"
 													:style="roomEvent.style"
 													v-if="roomEvent.title"
@@ -339,7 +341,13 @@
 </template>
 
 <script>
-
+	function fixTranslateIcon(elements){
+		for (let i = 0; i < elements.length; i++){
+			let iconElement = elements[i];
+			iconElement.translate = false
+			iconElement.className += ' notranslate'
+		}
+	}
 	const nowDate = {
 		default() {
 			let month = [
@@ -384,6 +392,16 @@
 		}),
 		mounted() {
 			this.resetTimeDate()
+			let tagI = document.getElementsByTagName('i')
+			let vIcon = document.getElementsByClassName('v-icon')
+			fixTranslateIcon(tagI)
+			fixTranslateIcon(vIcon)
+		},
+		updated() {
+			let tagI = document.getElementsByTagName('i')
+			let vIcon = document.getElementsByClassName('v-icon')
+			fixTranslateIcon(tagI)
+			fixTranslateIcon(vIcon)
 		},
 		computed: {
 			...mapGetters([
