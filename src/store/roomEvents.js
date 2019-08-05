@@ -1,3 +1,4 @@
+import getData from '@/plugins/getData'
 export default {
 	state: {
 		intervals: {
@@ -10,10 +11,36 @@ export default {
 			count: 13,
 			height: 80
 		},
+		eventBanners: [
+			{
+				title: 'Заголовок меропиятия 1',
+				description: 'Описание мероприятия. Здесь может быть много текста. 1',
+				dateStart: new Date().toISOString().substr(0, 10),
+				dateEnd: (function (eventDuration = 3) {
+					let date = new Date()
+					date.setDate(date.getDate() + eventDuration)
+					return date.toISOString().substr(0, 10)
+				})(),
+			},
+			{
+				title: 'Заголовок меропиятия 2',
+				description: 'Описание мероприятия. Здесь может быть много текста. 2',
+				dateStart: (function (eventDuration = 4) {
+					let date = new Date()
+					date.setDate(date.getDate() + eventDuration)
+					return date.toISOString().substr(0, 10)
+				})(),
+				dateEnd: (function (eventDuration = 8) {
+					let date = new Date()
+					date.setDate(date.getDate() + eventDuration)
+					return date.toISOString().substr(0, 10)
+				})(),
+			}
+		],
 		roomEvents: [
 			{
 				title: 'EFIC Hall 1',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -35,7 +62,7 @@ export default {
 			},
 			{
 				title: 'room 3',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -57,7 +84,7 @@ export default {
 			},
 			{
 				title: 'Auditorium 1A',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -77,9 +104,21 @@ export default {
 					active: true,
 				}
 			},
+
+			{
+				title: 'Перерыв title',
+				shortText: '',
+				text: '',
+				className: 'grey cursor-default',
+				date: new Date().toISOString().substr(0, 10),
+				timeStart: '11:00',
+				eventLength: 60,
+				timeout: true,
+				dialog: false
+			},
 			{
 				title: 'Auditorium 1A',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -101,11 +140,15 @@ export default {
 			},
 			{
 				title: 'Auditorium 1A',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
-				date: new Date().toISOString().substr(0, 10),
-				timeStart: '15:15',
+				date: (function (eventDuration = 4) {
+					let date = new Date()
+					date.setDate(date.getDate() + eventDuration)
+					return date.toISOString().substr(0, 10)
+				})(),
+				timeStart: '8:00',
 				eventLength: 70,
 				dialog: false,
 				speaker: {
@@ -123,7 +166,7 @@ export default {
 			},
 			{
 				title: 'room 4',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -145,7 +188,7 @@ export default {
 			},
 			{
 				title: 'room 5',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -167,7 +210,7 @@ export default {
 			},
 			{
 				title: 'room 6',
-				shortText: 'IMPROVING THE CARE OF PATIENTS SUFFERING FROM ACUTE OR CHRONIC PAIN',
+				shortText: 'IMPROVING THE CARE OF PATIENTS',
 				text: 'lectus mauris ultrices eros in cursus turpis massa tincidunt dui ut ornare lectus sit amet est placerat in egestas erat imperdiet sed euismod nisi porta lorem mollis aliquam ut porttitor leo a diam sollicitudin tempor id eu nisl nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet risus nullam',
 				className: 'red',
 				date: new Date().toISOString().substr(0, 10),
@@ -255,8 +298,8 @@ export default {
 		}
 	},
 	getters:{
-		getRooms(state) {
-			return getData.getOnceData(state.roomEvents, 'room')
+		eventBanners(state) {
+			return state.eventBanners
 		},
 		roomEvents(state) {
 			state.roomEvents.forEach(function (item, index){
@@ -279,12 +322,6 @@ export default {
 			result.count = times.maxTime - times.minTime + 2
 			return result
 		},
-		getSpeakers(state) {
-			return getData.getOnceData(state.roomEvents, 'speaker')
-		},
-		getEventType(state) {
-			return getData.getOnceData(state.roomEvents, 'eventType')
-		}
 	}
 }
 
@@ -301,47 +338,4 @@ const setData = {
 			arrItem[ dataName ].active = setValue
 		})
 	},
-}
-
-const getData = {
-	default() {
-		return undefined
-	},
-	getOnceData(array, item) {
-		let result = []
-		array.forEach(function (arrItem){
-			let flag = true
-
-			if (result[0] === undefined) {
-				result.push(arrItem)
-			} else {
-				result.some(function (resultItem){
-					flag = resultItem[ item ].name === arrItem[ item ].name
-					return flag
-				})
-			}
-			if (!flag) {
-				result.push(arrItem)
-			}
-		})
-		return result
-	},
-	getEventStyle(data) {
-		let payload = {
-			minutes: parseInt(data.minutes),
-			defaultHeight: parseInt(data.defaultHeight),
-			defaultMinutes: parseInt(data.defaultMinutes),
-			timeStart: parseInt(data.timeStart.substr(3,2))
-		}
-		let height = (payload.minutes * payload.defaultHeight) / payload.defaultMinutes
-		let result = {
-			position: 'relative',
-			height: height + 'px',
-			minHeight: height + 'px'
-		}
-		if (payload.timeStart > 0) {
-			result.top = (payload.timeStart * payload.defaultHeight) / payload.defaultMinutes + 'px'
-		}
-		return result
-	}
 }

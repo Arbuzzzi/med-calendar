@@ -54,13 +54,16 @@
 							full-width
 					>
 						<template v-slot:activator="{ on }">
-							<v-text-field
-									v-model="start"
-									label="Выберите день"
-									prepend-icon="event"
-									readonly
-									v-on="on"
-							></v-text-field>
+							<v-layout>
+								<v-icon class="notranslate">event</v-icon>
+								<v-text-field
+										class="ml-2"
+										v-model="start"
+										label="Выберите день"
+										readonly
+										v-on="on"
+								></v-text-field>
+							</v-layout>
 						</template>
 						<v-date-picker
 								v-model="start"
@@ -101,14 +104,18 @@
 
 					>
 						<template v-slot:activator="{ on }">
-							<v-text-field
-									v-model="timeStart"
-									label="Время c:"
-									prepend-icon="access_time"
-									:value="intervals.maxTimeDefault"
-									readonly
-									v-on="on"
-							></v-text-field>
+							<v-layout>
+								<v-icon class="notranslate">access_time</v-icon>
+								<v-text-field
+										class="ml-2"
+										v-model="timeStart"
+										label="Время c:"
+										:value="intervals.maxTimeDefault"
+										readonly
+										v-on="on"
+								></v-text-field>
+							</v-layout>
+
 						</template>
 						<v-time-picker
 								v-if="menuTimeStart"
@@ -136,14 +143,17 @@
 							min-width="290px"
 					>
 						<template v-slot:activator="{ on }">
-							<v-text-field
-									v-model="timeEnd"
-									label="Время по:"
-									prepend-icon="access_time"
-									:value="intervals.maxTimeDefault"
-									readonly
-									v-on="on"
-							></v-text-field>
+							<v-layout>
+								<v-icon class="notranslate">access_time</v-icon>
+								<v-text-field
+										class="ml-2"
+										v-model="timeEnd"
+										label="Время по:"
+										:value="intervals.maxTimeDefault"
+										readonly
+										v-on="on"
+								></v-text-field>
+							</v-layout>
 						</template>
 						<v-time-picker
 								v-if="menuTimeEnd"
@@ -170,7 +180,7 @@
 							ref="roomsFilter"
 							class="mt-1"
 							:light="false"
-							v-for="(roomEvent, i) in getRooms"
+							v-for="(roomEvent, i) in getDataTime(start, 'room')"
 							:key="roomEvent.room.name + i"
 							v-model="roomEvent.room.active"
 							@change="onChangeRoom({value: $event, room: {name: roomEvent.room.name}})"
@@ -179,9 +189,11 @@
 							hide-details
 							color="blue accent-4"
 					></v-checkbox>
+					<div v-if="getDataTime(start, 'room').length === 0">Выберите пожалуйста другую дату.</div>
 					<div class="text-xs-right mt-2">
 						<v-btn small
 								@click="resetCheckboxesRoom(roomsFilterDefault)"
+								:disabled="getDataTime(start, 'room').length === 0"
 						>сбросить фильтр</v-btn>
 					</div>
 
@@ -193,7 +205,7 @@
 					<v-checkbox
 							class="mt-1"
 							:light="false"
-							v-for="(speaker, i) in getSpeakers"
+							v-for="(speaker, i) in getDataTime(start, 'speaker')"
 							:key="speaker.title + i"
 							@change="onChangeSpeaker({value: $event, speaker: {name: speaker.speaker.name}})"
 							:label="speaker.speaker.name"
@@ -201,9 +213,11 @@
 							:input-value="speaker.speaker.active"
 							color="blue accent-4"
 					></v-checkbox>
+					<div v-if="getDataTime(start, 'speaker').length === 0">Выберите пожалуйста другую дату.</div>
 					<div class="text-xs-right mt-2">
 						<v-btn small
 								@click="resetCheckboxesSpeaker(roomsFilterDefault)"
+								:disabled="getDataTime(start, 'speaker').length === 0"
 						>сбросить фильтр</v-btn>
 					</div>
 
@@ -215,7 +229,7 @@
 					<v-checkbox
 							class="mt-1"
 							:light="false"
-							v-for="(eventType, i) in getEventType"
+							v-for="(eventType, i) in getDataTime(start, 'eventType')"
 							:key="eventType.title + i"
 							@change="onChangeEventType({value: $event, eventType: {name: eventType.eventType.name}})"
 							:label="eventType.eventType.name"
@@ -223,9 +237,11 @@
 							:input-value="eventType.eventType.active"
 							color="blue accent-4"
 					></v-checkbox>
+					<div v-if="getDataTime(start, 'eventType').length === 0">Выберите пожалуйста другую дату.</div>
 					<div class="text-xs-right mt-2">
 						<v-btn small
 								@click="resetCheckboxesEventType(roomsFilterDefault)"
+								:disabled="getDataTime(start, 'eventType').length === 0"
 						>сбросить фильтр</v-btn>
 					</div>
 
@@ -237,6 +253,23 @@
 				lg10
 				class="pl-3"
 		>
+			<v-layout class="mb-2"
+					v-if="eventBannerData.length !== 0"
+			>
+				<v-flex>
+					<v-card>
+						<v-card-title class="pb-0">
+							<h2 class="font-weight-regular headline">{{ eventBannerData.title }}</h2>
+						</v-card-title>
+						<v-card-text class="pb-0">
+							{{ eventBannerData.description }}
+						</v-card-text>
+						<v-card-text class="text-xs-right">
+							{{ getBannerDates }}
+						</v-card-text>
+					</v-card>
+				</v-flex>
+			</v-layout>
 			<v-sheet elevation="1" class="mr-2">
 				<v-calendar
 						ref="calendar"
@@ -246,6 +279,7 @@
 						:min-weeks="minWeeks"
 						:max-days="maxDays"
 						:dark="dark"
+						@change="setEventBannerData(start)"
 						:first-interval="intervals.first"
 						:interval-minutes="intervals.minutes"
 						:interval-count="intervals.count"
@@ -254,27 +288,28 @@
 						locale="ru-RU"
 						:interval-format="intervalFormat"
 				>
+
 					<template v-slot:interval="{hour, date, minutes, time, timeToY, minutesToPixels}">
 						<v-layout class="room-header"
 								v-if="hour === intervals.first"
 						>
-							<v-flex xs3 class="pa-1 calendar-border-right calendar-border-top"
+							<v-flex xs12 class="pa-1 calendar-border-right calendar-border-top"
 									:style="{minWidth: '140px'}"
-									v-for="roomEvent in getRooms"
-									:key="roomEvent.room.name"
-									:class="roomEvent.room.active ? '' : 'hide'"
+									v-for="(roomEvent, i) in getDataTime(date, 'room')"
+									:key="'roomEventName'+i"
+									v-show="roomEvent.room ? roomEvent.room.active : false "
 							>
 								<div>
 									{{ roomEvent.room.name }}
 								</div>
 							</v-flex>
 						</v-layout>
-						<v-layout class="fill-height">
-							<v-flex xs3 class="calendar-border-right fill-height pa-1"
+						<v-layout class="fill-height" v-if="hour !== intervals.first">
+							<v-flex xs12 class="calendar-border-right fill-height pa-1"
 									:style="{minWidth: '140px'}"
 									v-for="(roomEvent, i) in getRoomEventsTime(date, hour)"
 									:key="'roomEventTitle'+i"
-									:class="roomEvent.room.active ? '' : 'hide'"
+									v-show="roomEvent.room.active"
 							>
 								<v-dialog
 										v-model="roomEvent.dialog"
@@ -290,15 +325,14 @@
 																	roomEvent.eventType.active ? // проверка на фильтры
 																		roomEvent.dialog ? // проверка на модалку
 																		'green' :
-																		roomEvent.className + ` elevation-${hover ? 12 : 2}` :
+																		roomEvent.className + ` elevation-${hover && !roomEvent.timeout ? '12 z1000' : 2}` :
 																	roomEvent.className + ' disabled'"
 													:style="roomEvent.style"
-													v-if="roomEvent.title"
 													disabled
-													v-on="roomEvent.speaker.active && roomEvent.eventType.active ? on : ''"
+													v-on="roomEvent.speaker.active && roomEvent.eventType.active && !roomEvent.timeout ? on : ''"
 											>
 												<v-layout class="fill-height wrap"
-														:style="{minHeight: roomEvent.style.minHeight}"
+														:style="roomEvent.style ? {minHeight: roomEvent.style.minHeight}: {}"
 												>
 													<v-flex>
 														<v-card-text>
@@ -313,7 +347,7 @@
 													<v-flex class="mt-auto">
 														<v-card-text class="">
 															<div class="text-xs-right">
-																Спикер: {{ roomEvent.speaker.name }}
+																{{ roomEvent.speaker.name ? `Спикер: ${roomEvent.speaker.name}`: '' }}
 															</div>
 														</v-card-text>
 													</v-flex>
@@ -348,26 +382,10 @@
 			iconElement.className += ' notranslate'
 		}
 	}
-	const nowDate = {
-		default() {
-			let month = [
-				'Января',
-				'Февраля',
-				'Марта',
-				'Апреля',
-				'Мая',
-				'Июня',
-				'Июля',
-				'Авгуса',
-				'Сентября',
-				'Ноября',
-				'Декабря',
-			];
-			let date = new Date()
-			return `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`
-		}
-	}
-	import {mapGetters, mapActions} from 'vuex'
+
+	import {mapActions, mapGetters} from 'vuex'
+	import dateChanges from './../plugins/dateChanges'
+	import getData from './../plugins/getData'
 
 	export default {
 		data: () => ({
@@ -376,13 +394,14 @@
 			menuTimeEnd: '',
 			timeStart: '',
 			timeEnd: '',
+			eventBannerData: {},
 			dark: false,
 			startMenu: false,
 			start: new Date().toISOString().substr(0, 10),
 			end: null,
 			minWeeks: 1,
 			now: {
-				string: nowDate.default(),
+				string: dateChanges.default(),
 				date: new Date().toISOString().substr(0, 10)
 			},
 			type: 'day',
@@ -396,6 +415,7 @@
 			let vIcon = document.getElementsByClassName('v-icon')
 			fixTranslateIcon(tagI)
 			fixTranslateIcon(vIcon)
+			this.setEventBannerData(this.now.date)
 		},
 		updated() {
 			let tagI = document.getElementsByTagName('i')
@@ -406,12 +426,13 @@
 		computed: {
 			...mapGetters([
 				'intervals',
-				'getSpeakers',
-				'getEventType',
-				'getRooms',
-				'roomEvents'
+				'roomEvents',
+				'eventBanners'
 
 			]),
+			getBannerDates() {
+				return dateChanges.getDateIntervalString(this.eventBannerData.dateStart, this.eventBannerData.dateEnd)
+			},
 		},
 		methods: {
 			...mapActions([
@@ -425,6 +446,24 @@
 				'changeTimeEnd',
 				'resetTime',
 			]),
+
+			setEventBannerData(date) {
+
+				this.eventBanners.some((eventBanner)=> {
+
+					let eventTimeStartNum = dateChanges.sumDate(eventBanner.dateStart)
+					let eventTimeEndNum = dateChanges.sumDate(eventBanner.dateEnd)
+					let dateNum = dateChanges.sumDate(date)
+					let isCurrentDate = dateNum >= eventTimeStartNum && dateNum <= eventTimeEndNum
+
+					if (isCurrentDate) {
+						this.eventBannerData = eventBanner
+						return true
+					} else {
+						this.eventBannerData = []
+					}
+				})
+			},
 			resetTimeDate(){
 				this.start = this.now.date
 				this.timeStart = this.intervals.minTimeDefault
@@ -434,26 +473,50 @@
 			intervalFormat(interval) {
 				return interval.hour + ':00'
 			},
+			getDataTime(date, item) {
+				return getData.getOnceDataTime(this.roomEvents, item, date)
+			},
 			getRoomEventsTime(date, hour){
 				let result = []
-				this.getRooms.forEach((itemRoom, indexRoom)=>{
+				this.getDataTime(date, 'room').forEach((itemRoom, indexRoom)=>{
 					this.roomEvents.some((itemRoomEvent)=>{
-						if (itemRoomEvent.date === date
-							&& parseInt(itemRoomEvent.timeStart.substr(0, 2)) === hour
-							&& itemRoom.room.name === itemRoomEvent.room.name) {
+
+						let itemRoomEventName = itemRoomEvent.room ? itemRoomEvent.room.name : false
+						let isEventDate = itemRoomEvent.date === date
+						let isEventHour = parseInt(itemRoomEvent.timeStart.substr(0, 2)) === hour
+						let isRoomName = itemRoom.room.name === itemRoomEventName
+
+						if (isEventDate && isEventHour && isRoomName && !itemRoomEvent.timeout) {
 							result[indexRoom] = itemRoomEvent
 							return true
 						} else {
-							result[indexRoom] = {
-								title: null,
-								text: null,
-								className: null,
-								date: date,
-								timeStart: hour,
-								timeEnd: '10:00',
-								room: {
-									name: itemRoom.room.name,
-									active: itemRoom.room.active
+							if (itemRoomEvent.timeout && isEventDate && isEventHour) {
+								result = []
+								result[0] = itemRoomEvent
+								result[0].speaker = {name: null, active: true}
+								result[0].eventType = {name: null, active: true}
+								result[0].room = {name: null, active: true}
+								return true
+							} else {
+								result[indexRoom] = {
+									title: null,
+									text: null,
+									className: 'hide',
+									date: date,
+									timeStart: hour,
+									timeEnd: '10:00',
+									room: {
+										name: itemRoom.room.name,
+										active: itemRoom.room.active
+									},
+									speaker: {
+										name: null,
+										active: null
+									},
+									eventType: {
+										name: null,
+										active: null
+									}
 								}
 							}
 						}
@@ -471,9 +534,15 @@
 </script>
 
 <style scoped lang="scss">
+	.z1000 {
+		z-index: 1000;
+	}
 	.card-event {
 		transition: height 0.3s;
 		cursor: pointer;
+		&.cursor-default {
+			cursor: default;
+		}
 		&.disabled {
 			cursor: default;
 		}
@@ -520,9 +589,9 @@
 	.calendar-border-top {
 		border-top: #e0e0e0 1px solid;
 	}
-	.v-calendar-daily__day, .v-calendar-daily__intervals-body {
+	.v-calendar-daily__day, .v-calendar-daily__intervals-body  {
 		& > div:first-child {
-			height: auto !important;
+			height: 30px !important;
 		}
 	}
 </style>
