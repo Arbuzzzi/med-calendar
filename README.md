@@ -1,4 +1,6 @@
 # med-calendar
+Рассписание мероприятий
+https://arbuzzzi.github.io/med-calendar/dist
 
 ## Project setup
 ```
